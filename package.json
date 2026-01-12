@@ -1,0 +1,67 @@
+{
+  "name": "@choiceform/shared-auth",
+  "version": "0.1.18",
+  "description": "Shared authentication package for Choiceform projects",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rimraf dist",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "prepublishOnly": "pnpm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/choiceform/automation.git",
+    "directory": "packages/shared-auth"
+  },
+  "keywords": [
+    "authentication",
+    "auth",
+    "better-auth",
+    "legend-state",
+    "react",
+    "oauth",
+    "github-oauth",
+    "choiceform"
+  ],
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "better-auth": "^1.4.4"
+  },
+  "peerDependencies": {
+    "@legendapp/state": "v3.0.0-beta.30",
+    "better-auth": "^1.4.4",
+    "react": ">=18.0.0",
+    "react-dom": ">=18.0.0"
+  },
+  "devDependencies": {
+    "@legendapp/state": "v3.0.0-beta.30",
+    "@testing-library/react": "^16.3.0",
+    "@types/react": "18.2.71",
+    "@types/react-dom": "18.2.22",
+    "happy-dom": "^18.0.1",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.5.3",
+    "vitest": "^3.2.4"
+  }
+}
