@@ -129,6 +129,8 @@ export {
   type ListReferralsResponse,
   type ReferralErrorType,
   type ReferralResult,
+  type RemoveReferralErrorType,
+  type RemoveReferralResult,
   type NeedsReferralOptions,
 } from "./services"
 

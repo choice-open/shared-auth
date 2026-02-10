@@ -27,9 +27,18 @@ export interface ReferralResponse {
 /** 邀请码 API 错误类型 */
 export type ReferralErrorType = "already_referred" | "not_found" | "unknown"
 
+/** 删除邀请码 API 错误类型 */
+export type RemoveReferralErrorType = "not_found" | "forbidden" | "unknown"
+
 /** 提交邀请码的结果 */
 export interface ReferralResult {
   error: ReferralErrorType | undefined
+  success: boolean
+}
+
+/** 删除邀请码的结果 */
+export interface RemoveReferralResult {
+  error: RemoveReferralErrorType | undefined
   success: boolean
 }
 
@@ -63,6 +72,8 @@ export interface NeedsReferralOptions {
 export interface ReferralService {
   /** 查询当前用户的邀请记录 */
   listReferrals: () => Promise<ReferralRecord[]>
+  /** 删除邀请记录 */
+  removeReferral: (referralId: string) => Promise<RemoveReferralResult>
   /** 提交邀请码 */
   submitReferralCode: (referralCode: string) => Promise<ReferralResult>
 }
@@ -104,7 +115,24 @@ export function createReferralService(apiClient: ApiClient): ReferralService {
     }
   }
 
-  return { listReferrals, submitReferralCode }
+  async function removeReferral(referralId: string): Promise<RemoveReferralResult> {
+    const response = await apiClient.delete(`/v1/auth/referral/${referralId}`)
+
+    if (response.ok) {
+      return { success: true, error: undefined }
+    }
+
+    let error: RemoveReferralErrorType = "unknown"
+    if (response.status === 404) {
+      error = "not_found"
+    } else if (response.status === 403) {
+      error = "forbidden"
+    }
+
+    return { success: false, error }
+  }
+
+  return { listReferrals, removeReferral, submitReferralCode }
 }
 
 // ===== Utilities =====
