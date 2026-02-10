@@ -30,6 +30,9 @@ import { waitForAuth as waitForAuthUtil, createUserManager } from "./store/utils
 import { createApiClient, createAuthApi, createOrganizationApi, createTeamApi } from "./api"
 import { createAuthService } from "./services/auth-service"
 import { createReferralService } from "./services/referral-service"
+import { createApiKeyService } from "./services/api-key-service"
+import { createCreditService } from "./services/credit-service"
+import { createStripeService } from "./services/stripe-service"
 import type {
   AuthConfig,
   DeleteUser,
@@ -104,6 +107,9 @@ export function createAuth(config: AuthConfig) {
   )
 
   const referralService = createReferralService(apiClient)
+  const apiKeyService = createApiKeyService(apiClient)
+  const creditService = createCreditService(apiClient)
+  const stripeService = createStripeService(apiClient)
 
   // ============================================================
   // 5. Active 状态管理
@@ -159,6 +165,9 @@ export function createAuth(config: AuthConfig) {
     // Service Layer
     authService,
     referralService,
+    apiKeyService,
+    creditService,
+    stripeService,
 
     // Active 状态管理
     setActiveOrganization,

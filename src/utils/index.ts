@@ -17,4 +17,12 @@ export {
   type AuthErrorCode,
   type ParsedAuthError,
 } from "./auth-utils"
+export {
+  buildQueryString,
+  type QueryParamValue,
+} from "./query-string"
+export {
+  mapHttpStatusToError,
+  type HttpErrorType,
+} from "./error-mapper"
 

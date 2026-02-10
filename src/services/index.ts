@@ -18,12 +18,29 @@ export {
   needsReferral,
   getReferralFields,
   type ReferralService,
-  type ReferralResponse,
-  type ReferralRecord,
-  type ListReferralsResponse,
-  type ReferralErrorType,
-  type ReferralResult,
-  type RemoveReferralErrorType,
-  type RemoveReferralResult,
-  type NeedsReferralOptions,
+} from "./referral-service"
+export {
+  createApiKeyService,
+  type ApiKeyService,
+} from "./api-key-service"
+export {
+  createCreditService,
+  type CreditService,
+} from "./credit-service"
+export {
+  createStripeService,
+  type StripeService,
+} from "./stripe-service"
+
+// Re-export types from referral-service for backward compatibility
+export type {
+  ListReferralsResponse,
+  ListReferralsResult,
+  NeedsReferralOptions,
+  ReferralErrorType,
+  ReferralRecord,
+  ReferralResponse,
+  ReferralResult,
+  RemoveReferralErrorType,
+  RemoveReferralResult,
 } from "./referral-service"

@@ -4,135 +4,155 @@
  * 提供邀请码相关的业务逻辑：
  * - 提交邀请码
  * - 查询邀请记录
+ * - 删除邀请记录
  * - 检查用户是否需要填写邀请码
  * - 提取用户邀请码字段
  */
 
 import type { ApiClient, ApiResponse } from "../api"
 import type { SessionUser } from "../types"
+import type {
+  ListReferralsResponse,
+  ListReferralsResult,
+  NeedsReferralOptions,
+  ReferralErrorType,
+  ReferralResponse,
+  ReferralResult,
+  RemoveReferralErrorType,
+  RemoveReferralResult,
+} from "../types/referral"
 
-// ===== Types =====
+// ===== Constants =====
 
-/** POST /referral 响应 */
-export interface ReferralResponse {
-  referral: {
-    createdAt: string
-    id: string
-    referreeId: string
-    referrerId: string
-    status: string
+const BASE_PATH = "/v1/auth/referral"
+
+// ===== Helper Functions =====
+
+/**
+ * 将 HTTP 状态码映射为 Referral 错误类型
+ */
+function mapStatusToReferralError(status: number): ReferralErrorType {
+  switch (status) {
+    case 400:
+      return "already_referred"
+    case 404:
+      return "not_found"
+    default:
+      return "unknown"
   }
 }
 
-/** 邀请码 API 错误类型 */
-export type ReferralErrorType = "already_referred" | "not_found" | "unknown"
-
-/** 删除邀请码 API 错误类型 */
-export type RemoveReferralErrorType = "not_found" | "forbidden" | "unknown"
-
-/** 提交邀请码的结果 */
-export interface ReferralResult {
-  error: ReferralErrorType | undefined
-  success: boolean
-}
-
-/** 删除邀请码的结果 */
-export interface RemoveReferralResult {
-  error: RemoveReferralErrorType | undefined
-  success: boolean
-}
-
-/** 邀请记录 */
-export interface ReferralRecord {
-  createdAt: string
-  id: string
-  referree?: {
-    email: string | undefined
-    image: string | undefined
-    name: string | undefined
+/**
+ * 将 HTTP 状态码映射为 RemoveReferral 错误类型
+ */
+function mapStatusToRemoveReferralError(
+  status: number
+): RemoveReferralErrorType {
+  switch (status) {
+    case 403:
+      return "forbidden"
+    case 404:
+      return "not_found"
+    default:
+      return "unknown"
   }
-  referreeId: string
-  referrerId: string
-  status: string
 }
 
-/** GET /referral 响应 */
-export interface ListReferralsResponse {
-  referrals: ReferralRecord[]
-}
-
-/** 邀请码检查选项 */
-export interface NeedsReferralOptions {
-  /** 跳过检查的角色列表，默认 ["admin"] */
-  skipRoles?: string[]
-}
-
-// ===== Service =====
+// ===== Service Interface =====
 
 export interface ReferralService {
   /** 查询当前用户的邀请记录 */
-  listReferrals: () => Promise<ReferralRecord[]>
+  listReferrals: () => Promise<ListReferralsResult>
   /** 删除邀请记录（需要 admin 权限） */
   removeReferral: (referreeId: string) => Promise<RemoveReferralResult>
   /** 提交邀请码 */
   submitReferralCode: (referralCode: string) => Promise<ReferralResult>
 }
 
+// ===== Service Implementation =====
+
 /**
  * 创建邀请码服务
  */
 export function createReferralService(apiClient: ApiClient): ReferralService {
-  async function submitReferralCode(referralCode: string): Promise<ReferralResult> {
-    const response: ApiResponse<ReferralResponse> = await apiClient.post<ReferralResponse>(
-      "/v1/auth/referral",
-      { referralCode },
-    )
+  /**
+   * 提交邀请码
+   */
+  async function submitReferralCode(
+    referralCode: string
+  ): Promise<ReferralResult> {
+    try {
+      const response: ApiResponse<ReferralResponse> =
+        await apiClient.post<ReferralResponse>(BASE_PATH, { referralCode })
 
-    if (response.ok) {
-      return { success: true, error: undefined }
+      if (response.ok) {
+        return { success: true, error: undefined }
+      }
+
+      return {
+        success: false,
+        error: mapStatusToReferralError(response.status),
+      }
+    } catch {
+      return { success: false, error: "unknown" }
     }
-
-    let error: ReferralErrorType = "unknown"
-    if (response.status === 400) {
-      error = "already_referred"
-    } else if (response.status === 404) {
-      error = "not_found"
-    }
-
-    return { success: false, error }
   }
 
-  async function listReferrals(): Promise<ReferralRecord[]> {
+  /**
+   * 查询当前用户的邀请记录
+   */
+  async function listReferrals(): Promise<ListReferralsResult> {
     try {
       const response: ApiResponse<ListReferralsResponse> =
-        await apiClient.get<ListReferralsResponse>("/v1/auth/referral")
+        await apiClient.get<ListReferralsResponse>(BASE_PATH)
+
       if (response.ok) {
-        return response.data.referrals
+        return {
+          success: true,
+          data: response.data.referrals || [],
+          error: undefined,
+        }
       }
-      return []
+
+      return {
+        success: false,
+        data: [],
+        error: mapStatusToReferralError(response.status),
+      }
     } catch {
-      return []
+      return { success: false, data: [], error: "unknown" }
     }
   }
 
-  async function removeReferral(referreeId: string): Promise<RemoveReferralResult> {
-    const response = await apiClient.post("/v1/auth/delete-referral", { referreeId })
+  /**
+   * 删除邀请记录（需要 admin 权限）
+   */
+  async function removeReferral(
+    referreeId: string
+  ): Promise<RemoveReferralResult> {
+    try {
+      const response = await apiClient.post("/v1/auth/delete-referral", {
+        referreeId,
+      })
 
-    if (response.ok) {
-      return { success: true, error: undefined }
+      if (response.ok) {
+        return { success: true, error: undefined }
+      }
+
+      return {
+        success: false,
+        error: mapStatusToRemoveReferralError(response.status),
+      }
+    } catch {
+      return { success: false, error: "unknown" }
     }
-
-    let error: RemoveReferralErrorType = "unknown"
-    if (response.status === 404) {
-      error = "not_found"
-    } else if (response.status === 403) {
-      error = "forbidden"
-    }
-
-    return { success: false, error }
   }
 
-  return { listReferrals, removeReferral, submitReferralCode }
+  return {
+    listReferrals,
+    removeReferral,
+    submitReferralCode,
+  }
 }
 
 // ===== Utilities =====
@@ -144,7 +164,7 @@ export function createReferralService(apiClient: ApiClient): ReferralService {
  */
 export function needsReferral(
   user: SessionUser | null,
-  options?: NeedsReferralOptions,
+  options?: NeedsReferralOptions
 ): boolean {
   if (!user) return false
   if (user.emailVerified !== true) return false
@@ -165,3 +185,17 @@ export function getReferralFields(user: SessionUser | null) {
     referredBy: user?.referredBy,
   }
 }
+
+// ===== Re-export Types =====
+
+export type {
+  ListReferralsResponse,
+  ListReferralsResult,
+  NeedsReferralOptions,
+  ReferralErrorType,
+  ReferralRecord,
+  ReferralResponse,
+  ReferralResult,
+  RemoveReferralErrorType,
+  RemoveReferralResult,
+} from "../types/referral"
