@@ -72,8 +72,8 @@ export interface NeedsReferralOptions {
 export interface ReferralService {
   /** 查询当前用户的邀请记录 */
   listReferrals: () => Promise<ReferralRecord[]>
-  /** 删除邀请记录 */
-  removeReferral: (referralId: string) => Promise<RemoveReferralResult>
+  /** 删除邀请记录（需要 admin 权限） */
+  removeReferral: (referreeId: string) => Promise<RemoveReferralResult>
   /** 提交邀请码 */
   submitReferralCode: (referralCode: string) => Promise<ReferralResult>
 }
@@ -115,8 +115,8 @@ export function createReferralService(apiClient: ApiClient): ReferralService {
     }
   }
 
-  async function removeReferral(referralId: string): Promise<RemoveReferralResult> {
-    const response = await apiClient.delete(`/v1/auth/referral/${referralId}`)
+  async function removeReferral(referreeId: string): Promise<RemoveReferralResult> {
+    const response = await apiClient.post("/v1/auth/delete-referral", { referreeId })
 
     if (response.ok) {
       return { success: true, error: undefined }
