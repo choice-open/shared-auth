@@ -30,6 +30,10 @@ export interface SessionUser {
   lastLoginMethod?: string
   metadata: SessionUserMetadata
   name: string
+  /** 用户自己的邀请码（只读，注册时自动生成） */
+  referralCode?: string
+  /** 推荐人的用户 ID */
+  referredBy?: string
   role?: string
   updatedAt: string
 }

@@ -119,6 +119,15 @@ export {
   // 回调服务
   createCallbackService,
   type CallbackService,
+  // 邀请码服务
+  createReferralService,
+  needsReferral,
+  getReferralFields,
+  type ReferralService,
+  type ReferralResponse,
+  type ReferralErrorType,
+  type ReferralResult,
+  type NeedsReferralOptions,
 } from "./services"
 
 // ============================================================

@@ -58,6 +58,8 @@ export function extractSessionUser(responseData: unknown): SessionUser | null {
     lastLoginMethod: user.lastLoginMethod as string | undefined,
     metadata: (user.metadata as SessionUserMetadata) ?? {},
     name: (user.name as string) ?? "",
+    referralCode: user.referralCode as string | undefined,
+    referredBy: user.referredBy as string | undefined,
     role: user.role as string | undefined,
     updatedAt: String(user.updatedAt ?? ""),
   }

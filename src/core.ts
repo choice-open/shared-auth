@@ -29,6 +29,7 @@ import { createAuthComputed } from "./store/computed"
 import { waitForAuth as waitForAuthUtil, createUserManager } from "./store/utils"
 import { createApiClient, createAuthApi, createOrganizationApi, createTeamApi } from "./api"
 import { createAuthService } from "./services/auth-service"
+import { createReferralService } from "./services/referral-service"
 import type {
   AuthConfig,
   DeleteUser,
@@ -102,6 +103,8 @@ export function createAuth(config: AuthConfig) {
     }
   )
 
+  const referralService = createReferralService(apiClient)
+
   // ============================================================
   // 5. Active 状态管理
   // ============================================================
@@ -155,6 +158,7 @@ export function createAuth(config: AuthConfig) {
 
     // Service Layer
     authService,
+    referralService,
 
     // Active 状态管理
     setActiveOrganization,
