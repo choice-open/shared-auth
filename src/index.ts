@@ -125,6 +125,8 @@ export {
   getReferralFields,
   type ReferralService,
   type ReferralResponse,
+  type ReferralRecord,
+  type ListReferralsResponse,
   type ReferralErrorType,
   type ReferralResult,
   type NeedsReferralOptions,

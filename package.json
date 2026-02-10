@@ -1,6 +1,6 @@
 {
   "name": "@choiceform/shared-auth",
-  "version": "0.1.19",
+  "version": "0.1.20",
   "description": "Shared authentication package for Choiceform projects",
   "type": "module",
   "main": "./dist/index.js",

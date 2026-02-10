@@ -3,6 +3,7 @@
  *
  * 提供邀请码相关的业务逻辑：
  * - 提交邀请码
+ * - 查询邀请记录
  * - 检查用户是否需要填写邀请码
  * - 提取用户邀请码字段
  */
@@ -32,6 +33,25 @@ export interface ReferralResult {
   success: boolean
 }
 
+/** 邀请记录 */
+export interface ReferralRecord {
+  createdAt: string
+  id: string
+  referree?: {
+    email: string | undefined
+    image: string | undefined
+    name: string | undefined
+  }
+  referreeId: string
+  referrerId: string
+  status: string
+}
+
+/** GET /referral 响应 */
+export interface ListReferralsResponse {
+  referrals: ReferralRecord[]
+}
+
 /** 邀请码检查选项 */
 export interface NeedsReferralOptions {
   /** 跳过检查的角色列表，默认 ["admin"] */
@@ -41,6 +61,8 @@ export interface NeedsReferralOptions {
 // ===== Service =====
 
 export interface ReferralService {
+  /** 查询当前用户的邀请记录 */
+  listReferrals: () => Promise<ReferralRecord[]>
   /** 提交邀请码 */
   submitReferralCode: (referralCode: string) => Promise<ReferralResult>
 }
@@ -69,7 +91,20 @@ export function createReferralService(apiClient: ApiClient): ReferralService {
     return { success: false, error }
   }
 
-  return { submitReferralCode }
+  async function listReferrals(): Promise<ReferralRecord[]> {
+    try {
+      const response: ApiResponse<ListReferralsResponse> =
+        await apiClient.get<ListReferralsResponse>("/v1/auth/referral")
+      if (response.ok) {
+        return response.data.referrals
+      }
+      return []
+    } catch {
+      return []
+    }
+  }
+
+  return { listReferrals, submitReferralCode }
 }
 
 // ===== Utilities =====
