@@ -325,15 +325,15 @@ export function createStripeService(apiClient: ApiClient): StripeService {
         referenceId: request?.referenceId,
       })
 
-      const response: ApiResponse<SubscriptionsResponse> =
-        await apiClient.get<SubscriptionsResponse>(
+      const response: ApiResponse<StripeSubscription[]> =
+        await apiClient.get<StripeSubscription[]>(
           `${SUBSCRIPTION_PATH}/list${query}`
         )
 
       if (response.ok) {
         return {
           success: true,
-          subscriptions: response.data.subscriptions || [],
+          subscriptions: response.data,
           error: undefined,
         }
       }
