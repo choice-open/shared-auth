@@ -145,6 +145,8 @@ export type {
   StripePlan,
   ListStripePlansRequest,
   // Subscription
+  StripeSubscription,
+  ListActiveSubscriptionsRequest,
   UpgradeSubscriptionRequest,
   CancelSubscriptionRequest,
   RestoreSubscriptionRequest,
@@ -161,6 +163,7 @@ export type {
   GetStripePriceResult,
   ListStripePlansResult,
   GetStripePlanResult,
+  ListActiveSubscriptionsResult,
 } from "./stripe"
 
 // Referral 相关类型

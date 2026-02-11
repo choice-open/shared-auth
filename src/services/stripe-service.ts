@@ -16,6 +16,8 @@ import type {
   GetStripePlanResult,
   GetStripePriceResult,
   GetStripeProductResult,
+  ListActiveSubscriptionsRequest,
+  ListActiveSubscriptionsResult,
   ListStripePlansRequest,
   ListStripePlansResult,
   ListStripePricesRequest,
@@ -29,6 +31,7 @@ import type {
   StripeProduct,
   StripeRedirectResult,
   StripeResult,
+  StripeSubscription,
   UpgradeSubscriptionRequest,
 } from "../types"
 import { buildQueryString } from "../utils/query-string"
@@ -78,6 +81,10 @@ interface RedirectResponse {
   url?: string
 }
 
+interface SubscriptionsResponse {
+  subscriptions: StripeSubscription[]
+}
+
 // ===== Service Interface =====
 
 export interface StripeService {
@@ -91,6 +98,8 @@ export interface StripeService {
   getPrice: (id: string, include?: string) => Promise<GetStripePriceResult>
   /** 获取单个产品 */
   getProduct: (id: string, include?: string) => Promise<GetStripeProductResult>
+  /** 列出当前用户的活跃订阅 */
+  listActiveSubscriptions: (request?: ListActiveSubscriptionsRequest) => Promise<ListActiveSubscriptionsResult>
   /** 列出计划 */
   listPlans: (request?: ListStripePlansRequest) => Promise<ListStripePlansResult>
   /** 列出价格 */
@@ -305,6 +314,41 @@ export function createStripeService(apiClient: ApiClient): StripeService {
   // ===== Subscription Management =====
 
   /**
+   * 列出当前用户的活跃订阅
+   */
+  async function listActiveSubscriptions(
+    request?: ListActiveSubscriptionsRequest
+  ): Promise<ListActiveSubscriptionsResult> {
+    try {
+      const query = buildQueryString({
+        customerType: request?.customerType,
+        referenceId: request?.referenceId,
+      })
+
+      const response: ApiResponse<SubscriptionsResponse> =
+        await apiClient.get<SubscriptionsResponse>(
+          `${SUBSCRIPTION_PATH}/list${query}`
+        )
+
+      if (response.ok) {
+        return {
+          success: true,
+          subscriptions: response.data.subscriptions || [],
+          error: undefined,
+        }
+      }
+
+      return {
+        success: false,
+        subscriptions: [],
+        error: mapStatusToError(response.status),
+      }
+    } catch {
+      return { success: false, subscriptions: [], error: "unknown" }
+    }
+  }
+
+  /**
    * 升级订阅
    */
   async function upgradeSubscription(
@@ -419,6 +463,7 @@ export function createStripeService(apiClient: ApiClient): StripeService {
     getPlan,
     getPrice,
     getProduct,
+    listActiveSubscriptions,
     listPlans,
     listPrices,
     listProducts,

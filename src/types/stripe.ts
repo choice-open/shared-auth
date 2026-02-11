@@ -156,6 +156,42 @@ export interface ListStripePlansRequest {
 
 // ===== Subscription =====
 
+/** 活跃订阅信息 */
+export interface StripeSubscription {
+  /** 取消周期结束时是否取消 */
+  cancelAtPeriodEnd: boolean
+  /** 创建时间 */
+  createdAt: string
+  /** 当前计费周期结束时间 */
+  currentPeriodEnd: string | null
+  /** 当前计费周期开始时间 */
+  currentPeriodStart: string | null
+  /** 唯一标识符 */
+  id: string
+  /** 计划名称 */
+  plan: string
+  /** 引用 ID */
+  referenceId: string | null
+  /** 座位数 */
+  seats: number | null
+  /** 订阅状态 */
+  status: string
+  /** Stripe 客户 ID */
+  stripeCustomerId: string | null
+  /** Stripe 订阅 ID */
+  stripeSubscriptionId: string | null
+  /** 更新时间 */
+  updatedAt: string
+}
+
+/** 列出活跃订阅请求 */
+export interface ListActiveSubscriptionsRequest {
+  /** 客户类型 */
+  customerType?: StripeCustomerType | null
+  /** 引用 ID */
+  referenceId?: string | null
+}
+
 /** 升级订阅请求 */
 export interface UpgradeSubscriptionRequest {
   /** 是否年付 */
@@ -313,4 +349,14 @@ export interface GetStripePlanResult {
   plan: StripePlan | undefined
   /** 是否成功 */
   success: boolean
+}
+
+/** 列出活跃订阅结果 */
+export interface ListActiveSubscriptionsResult {
+  /** 错误类型 */
+  error: StripeErrorType | undefined
+  /** 是否成功 */
+  success: boolean
+  /** 订阅列表 */
+  subscriptions: StripeSubscription[]
 }
