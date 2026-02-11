@@ -62,10 +62,51 @@ export interface ListStripeProductsRequest {
 
 // ===== Stripe Price =====
 
+/** 阶梯定价计费方案 */
+export type StripeBillingScheme = "per_unit" | "tiered"
+
+/** 阶梯定价模式 */
+export type StripeTiersMode = "graduated" | "volume"
+
+/** 税务行为 */
+export type StripeTaxBehavior = "exclusive" | "inclusive" | "unspecified"
+
+/** 价格阶梯 */
+export interface StripePriceTier {
+  /** 扁平化金额 (分) */
+  flat_amount: number | null
+  /** 扁平化金额 (精确值) */
+  flat_amount_decimal: string | null
+  /** 单价 (分) */
+  unit_amount: number | null
+  /** 单价 (精确值，字符串表示) */
+  unit_amount_decimal: string | null
+  /** 阶梯上限数量，null 表示无上限 */
+  up_to: number | null
+}
+
+/** 循环计费信息 */
+export interface StripePriceRecurring {
+  /** 计费间隔 */
+  interval: StripePlanInterval
+  /** 计费间隔数量 */
+  interval_count: number
+}
+
+/** 数量转换 */
+export interface StripePriceTransformQuantity {
+  /** 除数 */
+  divide_by: number
+  /** 取整方式 */
+  round: "down" | "up"
+}
+
 /** Stripe 价格 */
 export interface StripePrice {
   /** 是否激活 */
   active: boolean
+  /** 计费方案 */
+  billingScheme: StripeBillingScheme
   /** 创建时间 */
   createdAt: string
   /** 货币 */
@@ -74,20 +115,36 @@ export interface StripePrice {
   id: string
   /** 是否为生产模式 */
   livemode: boolean
+  /** 查找键 */
+  lookupKey: string | null
   /** 元数据 */
   metadata: Record<string, string> | null
+  /** 价格别名 */
+  nickname: string | null
   /** 关联的产品 (可选包含) */
   product?: StripeProduct
   /** 产品 ID */
   productId: string
+  /** 循环计费信息 */
+  recurring: StripePriceRecurring | null
   /** Stripe 价格 ID */
   stripeId: string
   /** Stripe 产品 ID */
   stripeProductId: string
+  /** 税务行为 */
+  taxBehavior: StripeTaxBehavior | null
+  /** 阶梯定价列表 */
+  tiers: StripePriceTier[] | null
+  /** 阶梯定价模式 */
+  tiersMode: StripeTiersMode | null
+  /** 数量转换 */
+  transformQuantity: StripePriceTransformQuantity | null
   /** 价格类型 */
   type: string
   /** 单价 (分) */
   unitAmount: number | null
+  /** 单价 (精确值，字符串表示) */
+  unitAmountDecimal: string | null
   /** 更新时间 */
   updatedAt: string
 }
@@ -104,12 +161,27 @@ export interface ListStripePricesRequest {
 
 // ===== Stripe Plan =====
 
+/** 计划使用类型 */
+export type StripePlanUsageType = "licensed" | "metered"
+
+/** 计划数量转换 */
+export interface StripePlanTransformUsage {
+  /** 除数 */
+  divide_by: number
+  /** 取整方式 */
+  round: "down" | "up"
+}
+
 /** Stripe 计划 */
 export interface StripePlan {
   /** 是否激活 */
   active: boolean
   /** 金额 (分) */
   amount: number | null
+  /** 金额 (精确值，字符串表示) */
+  amountDecimal: string | null
+  /** 计费方案 */
+  billingScheme: StripeBillingScheme | null
   /** 创建时间 */
   createdAt: string
   /** 货币 */
@@ -122,10 +194,14 @@ export interface StripePlan {
   intervalCount: number
   /** 是否为生产模式 */
   livemode: boolean
+  /** 计量器 */
+  meter: string | null
   /** 元数据 */
   metadata: Record<string, string> | null
   /** 计划名称 */
   name: string
+  /** 计划别名 */
+  nickname: string | null
   /** 关联的产品 (可选包含) */
   product?: StripeProduct
   /** 产品 ID */
@@ -134,8 +210,16 @@ export interface StripePlan {
   stripeId: string
   /** Stripe 产品 ID */
   stripeProductId: string
+  /** 阶梯定价列表 */
+  tiers: StripePriceTier[] | null
+  /** 阶梯定价模式 */
+  tiersMode: StripeTiersMode | null
+  /** 数量转换 */
+  transformUsage: StripePlanTransformUsage | null
   /** 试用天数 */
   trialPeriodDays: number | null
+  /** 使用类型 */
+  usageType: StripePlanUsageType | null
   /** 更新时间 */
   updatedAt: string
 }
