@@ -242,6 +242,8 @@ export interface ListStripePlansRequest {
 
 /** 活跃订阅信息 */
 export interface StripeSubscription {
+  /** 取消时间 */
+  cancelAt: string | null
   /** 取消周期结束时是否取消 */
   cancelAtPeriodEnd: boolean
   /** 创建时间 */
@@ -252,6 +254,10 @@ export interface StripeSubscription {
   currentPeriodStart: string | null
   /** 唯一标识符 */
   id: string
+  /** 当前计费周期结束时间 */
+  periodEnd: string | null
+  /** 当前计费周期开始时间 */
+  periodStart: string | null
   /** 计划名称 */
   plan: string
   /** 引用 ID */
