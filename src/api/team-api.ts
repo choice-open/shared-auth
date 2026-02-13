@@ -14,6 +14,7 @@ import type {
   TeamMember,
   UpdateTeamRequest,
 } from "../types/team"
+import { createErrorWithSchema } from "../utils/error-schema"
 import type { ApiClient } from "./client"
 
 /**
@@ -38,7 +39,7 @@ export function createTeamApi(apiClient: ApiClient) {
         metadata: request.metadata ?? {},
       })
       if (!response.ok) {
-        throw new Error(`Failed to create team: ${response.status}`)
+        throw createErrorWithSchema("Failed to create team", response.status, response.data)
       }
       return response.data
     },
@@ -49,7 +50,7 @@ export function createTeamApi(apiClient: ApiClient) {
     async list(): Promise<Team[]> {
       const response = await apiClient.get<Team[]>(`${basePath}/list-teams`)
       if (!response.ok) {
-        throw new Error(`Failed to list teams: ${response.status}`)
+        throw createErrorWithSchema("Failed to list teams", response.status, response.data)
       }
       return response.data || []
     },
@@ -60,7 +61,7 @@ export function createTeamApi(apiClient: ApiClient) {
     async update(request: UpdateTeamRequest): Promise<Team> {
       const response = await apiClient.post<Team>(`${basePath}/update-team`, request)
       if (!response.ok) {
-        throw new Error(`Failed to update team: ${response.status}`)
+        throw createErrorWithSchema("Failed to update team", response.status, response.data)
       }
       return response.data
     },
@@ -71,7 +72,7 @@ export function createTeamApi(apiClient: ApiClient) {
     async delete(request: DeleteTeamRequest): Promise<void> {
       const response = await apiClient.post(`${basePath}/remove-team`, request)
       if (!response.ok) {
-        throw new Error(`Failed to delete team: ${response.status}`)
+        throw createErrorWithSchema("Failed to delete team", response.status, response.data)
       }
     },
 
@@ -81,7 +82,7 @@ export function createTeamApi(apiClient: ApiClient) {
     async listUserTeams(): Promise<Team[]> {
       const response = await apiClient.get<Team[]>(`${basePath}/list-user-teams`)
       if (!response.ok) {
-        throw new Error(`Failed to list user teams: ${response.status}`)
+        throw createErrorWithSchema("Failed to list user teams", response.status, response.data)
       }
       return response.data || []
     },
@@ -98,7 +99,7 @@ export function createTeamApi(apiClient: ApiClient) {
         `${basePath}/list-team-members?teamId=${encodeURIComponent(teamId)}`
       )
       if (!response.ok) {
-        throw new Error(`Failed to list team members: ${response.status}`)
+        throw createErrorWithSchema("Failed to list team members", response.status, response.data)
       }
       return response.data || []
     },
@@ -109,7 +110,7 @@ export function createTeamApi(apiClient: ApiClient) {
     async addMember(request: AddTeamMemberRequest): Promise<TeamMember> {
       const response = await apiClient.post<TeamMember>(`${basePath}/add-team-member`, request)
       if (!response.ok) {
-        throw new Error(`Failed to add team member: ${response.status}`)
+        throw createErrorWithSchema("Failed to add team member", response.status, response.data)
       }
       return response.data
     },
@@ -120,7 +121,7 @@ export function createTeamApi(apiClient: ApiClient) {
     async removeMember(request: RemoveTeamMemberRequest): Promise<void> {
       const response = await apiClient.post(`${basePath}/remove-team-member`, request)
       if (!response.ok) {
-        throw new Error(`Failed to remove team member: ${response.status}`)
+        throw createErrorWithSchema("Failed to remove team member", response.status, response.data)
       }
     },
 
@@ -130,7 +131,7 @@ export function createTeamApi(apiClient: ApiClient) {
     async leaveTeam(teamId: string): Promise<void> {
       const response = await apiClient.post("/v1/auth/leave-team", { teamId })
       if (!response.ok) {
-        throw new Error(`Failed to leave team: ${response.status}`)
+        throw createErrorWithSchema("Failed to leave team", response.status, response.data)
       }
     },
   }

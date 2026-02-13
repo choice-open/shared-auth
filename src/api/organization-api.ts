@@ -23,6 +23,7 @@ import type {
   RejectInvitationRequest,
   InvitationResponse,
 } from "../types/organization"
+import { createErrorWithSchema } from "../utils/error-schema"
 import type { ApiClient } from "./client"
 
 /**
@@ -45,7 +46,7 @@ export function createOrganizationApi(apiClient: ApiClient, _baseURL: string) {
     async create(request: CreateOrganizationRequest): Promise<Organization> {
       const response = await apiClient.post<Organization>(`${basePath}/create`, request)
       if (!response.ok) {
-        throw new Error(`Failed to create organization: ${response.status}`)
+        throw createErrorWithSchema("Failed to create organization", response.status, response.data)
       }
       return response.data
     },
@@ -56,7 +57,7 @@ export function createOrganizationApi(apiClient: ApiClient, _baseURL: string) {
     async update(request: UpdateOrganizationRequest): Promise<Organization> {
       const response = await apiClient.post<Organization>(`${basePath}/update`, request)
       if (!response.ok) {
-        throw new Error(`Failed to update organization: ${response.status}`)
+        throw createErrorWithSchema("Failed to update organization", response.status, response.data)
       }
       return response.data
     },
@@ -67,7 +68,7 @@ export function createOrganizationApi(apiClient: ApiClient, _baseURL: string) {
     async delete(request: DeleteOrganizationRequest): Promise<string> {
       const response = await apiClient.post<string>(`${basePath}/delete`, request)
       if (!response.ok) {
-        throw new Error(`Failed to delete organization: ${response.status}`)
+        throw createErrorWithSchema("Failed to delete organization", response.status, response.data)
       }
       return response.data
     },
@@ -78,7 +79,7 @@ export function createOrganizationApi(apiClient: ApiClient, _baseURL: string) {
     async list(): Promise<Organization[]> {
       const response = await apiClient.get<Organization[]>(`${basePath}/list`)
       if (!response.ok) {
-        throw new Error(`Failed to list organizations: ${response.status}`)
+        throw createErrorWithSchema("Failed to list organizations", response.status, response.data)
       }
       return response.data || []
     },
@@ -92,7 +93,7 @@ export function createOrganizationApi(apiClient: ApiClient, _baseURL: string) {
         if (response.status === 404) {
           return null
         }
-        throw new Error(`Failed to get organization: ${response.status}`)
+        throw createErrorWithSchema("Failed to get organization", response.status, response.data)
       }
       return response.data
     },
@@ -107,7 +108,7 @@ export function createOrganizationApi(apiClient: ApiClient, _baseURL: string) {
         if (response.status === 400) {
           return false
         }
-        throw new Error(`Failed to check slug: ${response.status}`)
+        throw createErrorWithSchema("Failed to check slug", response.status, response.data)
       }
       return true
     },
@@ -125,7 +126,7 @@ export function createOrganizationApi(apiClient: ApiClient, _baseURL: string) {
         if (response.status === 404) {
           return null
         }
-        throw new Error(`Failed to get active member: ${response.status}`)
+        throw createErrorWithSchema("Failed to get active member", response.status, response.data)
       }
       return response.data
     },
@@ -139,7 +140,7 @@ export function createOrganizationApi(apiClient: ApiClient, _baseURL: string) {
         if (response.status === 404) {
           return null
         }
-        throw new Error(`Failed to get active member role: ${response.status}`)
+        throw createErrorWithSchema("Failed to get active member role", response.status, response.data)
       }
       return response.data
     },
@@ -150,7 +151,7 @@ export function createOrganizationApi(apiClient: ApiClient, _baseURL: string) {
     async removeMember(request: RemoveMemberRequest): Promise<Member> {
       const response = await apiClient.post<{ member: Member }>(`${basePath}/remove-member`, request)
       if (!response.ok) {
-        throw new Error(`Failed to remove member: ${response.status}`)
+        throw createErrorWithSchema("Failed to remove member", response.status, response.data)
       }
       return response.data.member
     },
@@ -161,7 +162,7 @@ export function createOrganizationApi(apiClient: ApiClient, _baseURL: string) {
     async updateMemberRole(request: UpdateMemberRoleRequest): Promise<Member> {
       const response = await apiClient.post<{ member: Member }>(`${basePath}/update-member-role`, request)
       if (!response.ok) {
-        throw new Error(`Failed to update member role: ${response.status}`)
+        throw createErrorWithSchema("Failed to update member role", response.status, response.data)
       }
       return response.data.member
     },
@@ -180,7 +181,7 @@ export function createOrganizationApi(apiClient: ApiClient, _baseURL: string) {
         request
       )
       if (!response.ok) {
-        throw new Error(`Failed to invite member: ${response.status}`)
+        throw createErrorWithSchema("Failed to invite member", response.status, response.data)
       }
       return response.data
     },
@@ -191,7 +192,7 @@ export function createOrganizationApi(apiClient: ApiClient, _baseURL: string) {
     async listInvitations(): Promise<Invitation[]> {
       const response = await apiClient.get<Invitation[]>(`${basePath}/list-invitations`)
       if (!response.ok) {
-        throw new Error(`Failed to list invitations: ${response.status}`)
+        throw createErrorWithSchema("Failed to list invitations", response.status, response.data)
       }
       return response.data || []
     },
@@ -207,7 +208,7 @@ export function createOrganizationApi(apiClient: ApiClient, _baseURL: string) {
         if (response.status === 404) {
           return null
         }
-        throw new Error(`Failed to get invitation: ${response.status}`)
+        throw createErrorWithSchema("Failed to get invitation", response.status, response.data)
       }
       return response.data
     },
@@ -218,7 +219,7 @@ export function createOrganizationApi(apiClient: ApiClient, _baseURL: string) {
     async cancelInvitation(request: CancelInvitationRequest): Promise<void> {
       const response = await apiClient.post(`${basePath}/cancel-invitation`, request)
       if (!response.ok) {
-        throw new Error(`Failed to cancel invitation: ${response.status}`)
+        throw createErrorWithSchema("Failed to cancel invitation", response.status, response.data)
       }
     },
 
@@ -228,7 +229,7 @@ export function createOrganizationApi(apiClient: ApiClient, _baseURL: string) {
     async acceptInvitation(request: AcceptInvitationRequest): Promise<InvitationResponse> {
       const response = await apiClient.post<InvitationResponse>(`${basePath}/accept-invitation`, request)
       if (!response.ok) {
-        throw new Error(`Failed to accept invitation: ${response.status}`)
+        throw createErrorWithSchema("Failed to accept invitation", response.status, response.data)
       }
       return response.data
     },
@@ -239,7 +240,7 @@ export function createOrganizationApi(apiClient: ApiClient, _baseURL: string) {
     async rejectInvitation(request: RejectInvitationRequest): Promise<InvitationResponse> {
       const response = await apiClient.post<InvitationResponse>(`${basePath}/reject-invitation`, request)
       if (!response.ok) {
-        throw new Error(`Failed to reject invitation: ${response.status}`)
+        throw createErrorWithSchema("Failed to reject invitation", response.status, response.data)
       }
       return response.data
     },
@@ -252,7 +253,7 @@ export function createOrganizationApi(apiClient: ApiClient, _baseURL: string) {
     async leave(organizationId: string): Promise<void> {
       const response = await apiClient.post(`${basePath}/leave`, { organizationId })
       if (!response.ok) {
-        throw new Error(`Failed to leave organization: ${response.status}`)
+        throw createErrorWithSchema("Failed to leave organization", response.status, response.data)
       }
     },
   }

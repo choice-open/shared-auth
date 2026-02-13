@@ -15,6 +15,7 @@ import type {
   UserSession,
 } from "../types"
 import { extractSessionUser } from "../utils"
+import { createErrorWithSchema } from "../utils/error-schema"
 import type { ApiClient } from "./client"
 
 /**
@@ -53,7 +54,7 @@ export function createAuthApi(apiClient: ApiClient) {
       })
 
       if (!response.ok) {
-        throw new Error(`Failed to fetch session: ${response.status}`)
+        throw createErrorWithSchema("Failed to fetch session", response.status, response.data)
       }
 
       return extractSessionUser(response.data)
@@ -73,7 +74,7 @@ export function createAuthApi(apiClient: ApiClient) {
       })
 
       if (!response.ok) {
-        throw new Error(`Failed to onboard: ${response.status}`)
+        throw createErrorWithSchema("Failed to onboard", response.status, response.data)
       }
     },
 
@@ -90,7 +91,7 @@ export function createAuthApi(apiClient: ApiClient) {
         data
       )
       if (!response.ok) {
-        throw new Error(`Failed to update user: ${response.status}`)
+        throw createErrorWithSchema("Failed to update user", response.status, response.data)
       }
       return this.getSession()
     },
@@ -109,7 +110,7 @@ export function createAuthApi(apiClient: ApiClient) {
       )
 
       if (!response.ok) {
-        throw new Error(`Failed to send magic link: ${response.status}`)
+        throw createErrorWithSchema("Failed to send magic link", response.status, response.data)
       }
 
       return response.data
@@ -138,7 +139,7 @@ export function createAuthApi(apiClient: ApiClient) {
       )
 
       if (!response.ok) {
-        throw new Error(`Failed to resend verification email: ${response.status}`)
+        throw createErrorWithSchema("Failed to resend verification email", response.status, response.data)
       }
 
       return response.data
@@ -186,7 +187,7 @@ export function createAuthApi(apiClient: ApiClient) {
       )
 
       if (!response.ok) {
-        throw new Error(`Failed to link credential: ${response.status}`)
+        throw createErrorWithSchema("Failed to link credential", response.status, response.data)
       }
     },
 
@@ -209,7 +210,7 @@ export function createAuthApi(apiClient: ApiClient) {
       )
 
       if (!response.ok) {
-        throw new Error(`Failed to change password: ${response.status}`)
+        throw createErrorWithSchema("Failed to change password", response.status, response.data)
       }
 
       return response.data
@@ -238,12 +239,7 @@ export function createAuthApi(apiClient: ApiClient) {
       )
 
       if (!response.ok) {
-        // 提取服务器返回的错误代码
-        const errorData = response.data as { code?: string; message?: string }
-        if (errorData?.code) {
-          throw new Error(JSON.stringify({ code: errorData.code, message: errorData.message }))
-        }
-        throw new Error(`Failed to change email: ${response.status}`)
+        throw createErrorWithSchema("Failed to change email", response.status, response.data)
       }
 
       return response.data
@@ -272,7 +268,7 @@ export function createAuthApi(apiClient: ApiClient) {
       )
 
       if (!response.ok) {
-        throw new Error(`Failed to list accounts: ${response.status}`)
+        throw createErrorWithSchema("Failed to list accounts", response.status, response.data)
       }
 
       return response.data
@@ -329,7 +325,7 @@ export function createAuthApi(apiClient: ApiClient) {
       )
 
       if (!response.ok) {
-        throw new Error(`Failed to unlink account: ${response.status}`)
+        throw createErrorWithSchema("Failed to unlink account", response.status, response.data)
       }
 
       return response.data
@@ -354,7 +350,7 @@ export function createAuthApi(apiClient: ApiClient) {
       )
 
       if (!response.ok) {
-        throw new Error(`Failed to delete user: ${response.status}`)
+        throw createErrorWithSchema("Failed to delete user", response.status, response.data)
       }
 
       return response.data
@@ -378,7 +374,7 @@ export function createAuthApi(apiClient: ApiClient) {
       )
 
       if (!response.ok) {
-        throw new Error(`Failed to list sessions: ${response.status}`)
+        throw createErrorWithSchema("Failed to list sessions", response.status, response.data)
       }
 
       return response.data
@@ -402,7 +398,7 @@ export function createAuthApi(apiClient: ApiClient) {
       )
 
       if (!response.ok) {
-        throw new Error(`Failed to revoke session: ${response.status}`)
+        throw createErrorWithSchema("Failed to revoke session", response.status, response.data)
       }
 
       return response.data
